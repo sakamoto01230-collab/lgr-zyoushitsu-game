@@ -1,0 +1,950 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>上質接客トレーニング｜LAOX 時計事業</title>
+<style>
+:root{
+  --navy:#0f1c38;
+  --navy2:#152744;
+  --panel:#1b3055;
+  --panel2:#213a63;
+  --line:#2c477a;
+  --gold:#c9a24b;
+  --gold-soft:#e0c684;
+  --ink:#eef2f8;
+  --muted:#9fadc6;
+  --good:#5bbd8b;
+  --good-bg:#173a2c;
+  --bad:#d97b73;
+  --bad-bg:#3a1e1c;
+  --shadow:0 18px 40px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",YuGothic,Meiryo,system-ui,sans-serif;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #16294a 0%, transparent 60%),
+    linear-gradient(180deg,#0d1830 0%, #0b1428 100%);
+  color:var(--ink);
+  min-height:100vh;
+  -webkit-text-size-adjust:100%;
+  line-height:1.7;
+}
+.wrap{max-width:680px;margin:0 auto;padding:22px 18px 64px}
+.brand{display:flex;align-items:center;gap:12px;justify-content:center;margin:8px 0 2px}
+.brand .mark{
+  font-weight:700;letter-spacing:.04em;font-size:20px;color:var(--gold);
+  border:1px solid var(--gold);border-radius:6px;padding:3px 10px 4px;
+}
+.brand .mark b{color:var(--gold-soft)}
+h1{
+  text-align:center;font-size:clamp(21px,5.4vw,28px);margin:16px 0 4px;
+  font-weight:700;letter-spacing:.03em;color:var(--ink);
+}
+.sub{text-align:center;color:var(--muted);font-size:13px;margin:0 0 20px}
+.section-label{color:var(--gold);font-size:12px;letter-spacing:.18em;text-align:center;margin:26px 0 12px}
+
+/* scoreboard */
+.scoreboard{
+  background:linear-gradient(180deg,#22406e 0%, #16294a 100%);
+  border:1px solid var(--gold);border-radius:14px;padding:14px 16px;
+  display:flex;align-items:center;gap:14px;justify-content:space-between;box-shadow:var(--shadow);
+}
+.scoreboard .pts{display:flex;flex-direction:column}
+.scoreboard .pts b{font-size:30px;color:var(--gold-soft);line-height:1;font-weight:700}
+.scoreboard .pts small{color:var(--muted);font-size:11px;letter-spacing:.14em;margin-top:3px}
+.scoreboard .prog{text-align:right}
+.scoreboard .prog .stars{font-size:18px;letter-spacing:2px;color:var(--gold)}
+.scoreboard .prog .stars .off{color:#3a4d76}
+.scoreboard .prog small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.master-banner{
+  margin-top:10px;background:linear-gradient(90deg,#3a2e12,#5a4416,#3a2e12);
+  border:1px solid var(--gold);border-radius:12px;padding:10px 14px;text-align:center;
+  color:var(--gold-soft);font-size:13px;font-weight:700;letter-spacing:.06em;display:none;
+}
+.master-banner.show{display:block}
+
+/* value legend */
+.values{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 8px}
+.values .v{background:var(--navy2);border:1px solid var(--line);border-radius:10px;padding:9px 8px;text-align:center}
+.values .v b{display:block;color:var(--gold-soft);font-size:13px;letter-spacing:.04em}
+.values .v span{display:block;color:var(--muted);font-size:10.5px;margin-top:2px;line-height:1.4}
+
+/* chapter cards */
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{
+  background:linear-gradient(180deg,var(--panel) 0%, var(--navy2) 100%);
+  border:1px solid var(--line);border-radius:14px;padding:16px 14px;
+  cursor:pointer;text-align:left;color:var(--ink);
+  transition:transform .12s ease,border-color .12s ease, box-shadow .12s ease;
+  position:relative;overflow:hidden;
+}
+.card:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:var(--shadow)}
+.card .num{color:var(--gold);font-size:12px;letter-spacing:.14em}
+.card h3{margin:6px 0 2px;font-size:17px;font-weight:700}
+.card p{margin:0;color:var(--muted);font-size:12px}
+.card .star{position:absolute;top:12px;right:13px;font-size:16px;color:#3a4d76}
+.card.perfect{border-color:var(--gold)}
+.card.perfect .star{color:var(--gold)}
+.card .best{display:block;margin-top:6px;color:var(--gold-soft);font-size:11px;min-height:14px}
+
+/* coming soon */
+.card.soon{
+  background:linear-gradient(180deg,#132241 0%, #0f1c38 100%);
+  border-style:dashed;border-color:#324a78;cursor:default;opacity:.85;
+}
+.card.soon:hover{transform:none;border-color:#3e5789;box-shadow:none}
+.card.soon h3{color:var(--muted)}
+.card.soon .num{color:#6b83b0}
+.card.soon .ribbon{
+  position:absolute;top:12px;right:12px;font-size:9.5px;letter-spacing:.12em;
+  color:var(--navy);background:#6b83b0;border-radius:20px;padding:2px 8px;font-weight:700;
+}
+.card.soon.more{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.card.soon.more h3{color:var(--gold-soft)}
+.roadmap{text-align:center;color:var(--muted);font-size:12px;margin:14px 0 0}
+.roadmap b{color:var(--gold-soft)}
+
+/* toast */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(10px);
+  background:#1b3055;border:1px solid var(--gold);color:var(--ink);
+  padding:11px 18px;border-radius:24px;font-size:13px;box-shadow:var(--shadow);
+  opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;z-index:50;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* screen */
+.screen{display:none}
+.screen.active{display:block}
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.back{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px}
+.back:hover{border-color:var(--gold)}
+.chap-title{font-size:18px;font-weight:700}
+.chap-title small{display:block;color:var(--gold);font-size:11px;letter-spacing:.12em;font-weight:400}
+
+.progress{display:flex;align-items:center;gap:10px;margin:14px 0 4px}
+.progress .bar{flex:1;height:6px;background:var(--navy2);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.progress .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-soft));width:0;transition:width .3s ease}
+.progress .count{color:var(--muted);font-size:12px;white-space:nowrap}
+.runstate{color:var(--muted);font-size:11px;text-align:right;margin:2px 0 0}
+.runstate b{color:var(--gold-soft)}
+
+.q{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 16px;margin-top:12px;box-shadow:var(--shadow)}
+.q .scene{color:var(--gold-soft);font-size:13px;margin:0 0 4px;letter-spacing:.02em}
+.q .stem{font-size:16px;font-weight:700;margin:2px 0 14px;line-height:1.6}
+.phrase{color:var(--gold-soft);font-style:italic;font-weight:600}
+
+.opts{display:grid;gap:10px}
+.opt{text-align:left;background:var(--navy2);border:1px solid var(--line);color:var(--ink);border-radius:11px;padding:13px 14px;cursor:pointer;font-size:15px;transition:border-color .12s ease,background .12s ease;line-height:1.6}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt:disabled{cursor:default}
+.opt.correct{border-color:var(--good);background:var(--good-bg)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.opt .tag{float:right;font-size:12px;font-weight:700;margin-left:8px}
+.opt.correct .tag{color:var(--good)}
+.opt.wrong .tag{color:var(--bad)}
+
+.angles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.angle{background:var(--navy2);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:14px 8px;cursor:pointer;text-align:center;transition:border-color .12s ease,background .12s ease}
+.angle:hover:not(:disabled){border-color:var(--gold)}
+.angle:disabled{cursor:default}
+.angle b{display:block;font-size:24px;color:var(--gold-soft)}
+.angle span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.angle.correct{border-color:var(--good);background:var(--good-bg)}
+.angle.wrong{border-color:var(--bad);background:var(--bad-bg)}
+
+.fb{margin-top:14px;border-radius:11px;padding:13px 14px;font-size:14px;display:none;line-height:1.7}
+.fb.show{display:block}
+.fb.ok{background:var(--good-bg);border:1px solid var(--good)}
+.fb.ng{background:var(--bad-bg);border:1px solid var(--bad)}
+.fb .head{font-weight:700;margin-bottom:4px}
+.fb.ok .head{color:var(--good)}
+.fb.ng .head{color:var(--bad)}
+.fb .value{display:inline-block;margin-top:8px;font-size:12px;color:var(--navy);background:var(--gold-soft);border-radius:20px;padding:2px 11px;font-weight:700}
+.next{margin-top:14px;width:100%;background:linear-gradient(180deg,var(--gold),#b98f3d);color:#241a06;border:none;border-radius:11px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;display:none;letter-spacing:.04em}
+.next.show{display:block}
+.next:hover{filter:brightness(1.05)}
+
+/* grooming / tap */
+.tapwrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.figure{position:relative;width:190px;max-width:56vw;aspect-ratio:190/380;background:linear-gradient(180deg,#0d1a34,#0a1730);border:1px solid var(--line);border-radius:14px;flex:0 0 auto;margin:0 auto}
+.figure svg{position:absolute;inset:0;width:100%;height:100%}
+.hot{position:absolute;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;background:rgba(201,162,75,.15);border:2px solid var(--gold);cursor:pointer;padding:0;z-index:3}
+.hot::after{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--gold);opacity:.5}
+.hot.sel{background:var(--gold);box-shadow:0 0 0 5px rgba(201,162,75,.25)}
+.hot.sel::after{opacity:1;background:var(--navy)}
+.hot.reveal-ng{border-color:var(--good);background:var(--good)}
+.hot.reveal-ng::after{background:#fff;opacity:.9}
+.hot.reveal-miss{border-color:var(--good);background:transparent;animation:pulse 1s infinite}
+.hot.reveal-bad{border-color:var(--bad);background:var(--bad)}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(91,189,139,.25)}}
+.legend{flex:1;min-width:180px}
+.legend .lg-title{color:var(--gold-soft);font-size:13px;margin-bottom:8px}
+.chip{display:block;width:100%;text-align:left;background:var(--navy2);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:9px 12px;margin-bottom:8px;cursor:pointer;font-size:13px}
+.chip .dot{display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid var(--gold);margin-right:8px;vertical-align:middle}
+.chip.sel{border-color:var(--gold)}
+.chip.sel .dot{background:var(--gold)}
+.chip.r-ng{border-color:var(--good)} .chip.r-ng .dot{background:var(--good);border-color:var(--good)}
+.chip.r-bad{border-color:var(--bad)} .chip.r-bad .dot{background:var(--bad);border-color:var(--bad)}
+.tap-hint{color:var(--muted);font-size:12px;text-align:center;margin:10px 0 0}
+
+/* results */
+.result{text-align:center;padding:8px 0}
+.seal{width:150px;height:150px;margin:14px auto 6px;border-radius:50%;background:radial-gradient(circle at 50% 38%, #23406e, #0e1c38);border:3px solid var(--gold);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:var(--shadow);position:relative}
+.seal::before{content:"";position:absolute;inset:8px;border-radius:50%;border:1px solid var(--gold-soft);opacity:.5}
+.seal .tier{font-size:26px;font-weight:700;color:var(--gold-soft);letter-spacing:.06em}
+.seal .lbl{font-size:11px;color:var(--muted);letter-spacing:.14em;margin-top:2px}
+.score{font-size:34px;font-weight:700;color:var(--ink);margin:8px 0 0}
+.score span{font-size:16px;color:var(--muted)}
+.result p{color:var(--muted);font-size:14px;margin:6px 0 0}
+.gain{margin:14px auto 0;max-width:360px}
+.gain .row{display:flex;justify-content:space-between;font-size:14px;padding:7px 14px;border-bottom:1px solid var(--line);color:var(--muted)}
+.gain .row b{color:var(--gold-soft)}
+.gain .total{background:var(--navy2);border:1px solid var(--gold);border-radius:10px;margin-top:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.gain .total span{color:var(--muted);font-size:13px}
+.gain .total b{color:var(--gold-soft);font-size:22px}
+.celebrate{margin:14px auto 0;max-width:380px;background:linear-gradient(90deg,#3a2e12,#5a4416,#3a2e12);border:1px solid var(--gold);border-radius:12px;padding:14px;color:var(--gold-soft);font-weight:700;letter-spacing:.05em;display:none}
+.celebrate.show{display:block}
+.result .actions{display:flex;gap:10px;margin-top:20px}
+.result .actions button{flex:1;border-radius:11px;padding:13px;font-size:14px;font-weight:700;cursor:pointer}
+.btn-gold{background:linear-gradient(180deg,var(--gold),#b98f3d);color:#241a06;border:none}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--gold)}
+
+.foot{text-align:center;color:var(--muted);font-size:11px;margin-top:34px;line-height:1.8}
+
+@media (max-width:420px){
+  .values{grid-template-columns:repeat(2,1fr)}
+  .menu{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===================== HOME ===================== -->
+  <div id="home" class="screen active">
+    <div class="brand"><span class="mark">Watch<b>.</b></span></div>
+    <h1>上質接客トレーニング</h1>
+    <p class="sub">LAOX 時計事業 スタッフ育成ゲーム　接客フローに沿って、遊びながら型を身につける</p>
+
+    <div class="scoreboard">
+      <div class="pts"><b id="sbPoints">0</b><small>TOTAL POINTS</small></div>
+      <div class="prog">
+        <div class="stars" id="sbStars"></div>
+        <small id="sbProgLbl">全章パーフェクトを目指そう</small>
+      </div>
+    </div>
+    <div class="master-banner" id="masterBanner">◆ 全章パーフェクト達成　マスター認定 ◆</div>
+
+    <div class="section-label">私たちが提供する 6 つの価値</div>
+    <div class="values">
+      <div class="v"><b>安心</b><span>信頼のブランドと確かな品質</span></div>
+      <div class="v"><b>発見</b><span>新たな魅力との出会い</span></div>
+      <div class="v"><b>納得</b><span>丁寧な説明で深い理解を</span></div>
+      <div class="v"><b>確信</b><span>後悔なき選択へのサポート</span></div>
+      <div class="v"><b>上質</b><span>洗練された空間とサービス</span></div>
+      <div class="v"><b>ホスピタリティ</b><span>心からのおもてなし</span></div>
+    </div>
+
+    <div class="section-label">章を選んでください</div>
+    <div class="menu" id="menu"></div>
+
+    <div class="section-label" style="margin-top:28px">今後の章　COMING SOON</div>
+    <div class="menu" id="comingMenu"></div>
+    <p class="roadmap" id="roadmap"></p>
+
+    <p class="foot">
+      全 5 章　正解 +10pt ／ 全問正解ボーナス +50pt ／ 全 5 章パーフェクトで +200pt グランドボーナス。<br>
+      進捗はこの端末内にのみ保存されます（外部通信なし）。
+    </p>
+  </div>
+  <div id="toast" class="toast"></div>
+
+  <!-- ===================== QUIZ ===================== -->
+  <div id="quiz" class="screen">
+    <div class="topbar">
+      <button class="back" onclick="goHome()">← 章メニュー</button>
+      <div class="chap-title" id="qChapTitle">章タイトル<small id="qChapSub">サブ</small></div>
+    </div>
+    <div class="progress">
+      <div class="bar"><i id="qBar"></i></div>
+      <div class="count" id="qCount">1 / 5</div>
+    </div>
+    <div class="runstate" id="qRun">この挑戦：全問正解を継続中</div>
+    <div id="qBody"></div>
+  </div>
+
+  <!-- ===================== RESULT ===================== -->
+  <div id="result" class="screen">
+    <div class="result">
+      <div class="seal"><div class="tier" id="rTier">習得</div><div class="lbl">BADGE</div></div>
+      <div class="score" id="rScore">0 <span>/ 0</span></div>
+      <div class="section-label" id="rChap" style="margin-top:10px"></div>
+      <p id="rMsg"></p>
+      <div class="celebrate" id="rCelebrate"></div>
+      <div class="gain" id="rGain"></div>
+      <div class="actions">
+        <button class="btn-ghost" onclick="startChapter(currentChapterId)">もう一度</button>
+        <button class="btn-gold" onclick="goHome()">章メニューへ</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* =========================================================
+   コンテンツはすべて勉強会資料（上質接客 勉強会資料）に準拠。
+   ========================================================= */
+
+const CHAPTERS = [
+  /* ---------- 1. 来店対応（接客ロールプレイ） ---------- */
+  {
+    id:"arrival", num:"I", title:"来店対応", subtitle:"接客ロールプレイ", type:"choice",
+    questions:[
+      {
+        scene:"お出迎えの場面",
+        stem:"お客様がご来店されました。最適な一手はどれでしょうか。",
+        options:[
+          {t:"三分咲きの笑顔でアイコンタクトをとり、自分から <span class='phrase'>いらっしゃいませ</span> と挨拶する", ok:true},
+          {t:"満開のオープンフェイスで、元気よくお声がけする", ok:false},
+          {t:"お客様が商品を見始めるまで、そっと控えて声はかけない", ok:false},
+          {t:"まずご要望を詳しく伺ってから、あらためて挨拶する", ok:false},
+        ],
+        value:"ホスピタリティ",
+        exp:"挨拶は誰に対しても自分から進んで行うのが原則です。店頭の基本表情は三分咲きの笑顔（満開はお声掛け・感謝の場面用）。挨拶より先に用件を伺うのではなく、まず自分からお迎えします。"
+      },
+      {
+        scene:"検討中の場面",
+        stem:"お客様が商品を前に、黙って考え込んでいます。最適な一手はどれでしょうか。",
+        options:[
+          {t:"にこやかに見守り、お客様のペースを尊重する", ok:true},
+          {t:"迷いを解けるよう、おすすめの理由を丁寧に説明する", ok:false},
+          {t:"二択に絞れるよう、それぞれの違いを比較してお伝えする", ok:false},
+          {t:"選択肢を広げようと、別のモデルもいくつかお持ちする", ok:false},
+        ],
+        value:"上質",
+        exp:"会話の余白を大切にします。沈黙を恐れず、必要以上に説明せず、お客様のペースを尊重します。考え込む時間も大切なお考えの時間で、良かれと思う説明や追加提案でその時間を奪わないことが上質な接客です。"
+      },
+      {
+        scene:"商品説明の場面",
+        stem:"お客様から商品の説明を求められました。最適な一手はどれでしょうか。",
+        options:[
+          {t:"専門用語をかみ砕き、分かりやすく説明する", ok:true},
+          {t:"正確さを期して、専門用語を正しく用いて詳しく説明する", ok:false},
+          {t:"知識の確かさが伝わるよう、専門用語を交えて話す", ok:false},
+          {t:"まずご予算を伺い、価格帯に合わせて説明する", ok:false},
+        ],
+        value:"納得",
+        exp:"専門知識をわかりやすく説明し、深い理解につなげます。正確さや知識量を優先して専門用語で煙に巻いたり、求められた説明より先に予算の話へ移すことは避けます。"
+      },
+      {
+        scene:"選択に迷う場面",
+        stem:"どのモデルにするか迷っているお客様。最適な一手はどれでしょうか。",
+        options:[
+          {t:"ニーズを伺い、お客様に合った一品を提案し、後悔のない選択を支える", ok:true},
+          {t:"お気持ちを尊重し、こちらからは提案せずお任せする", ok:false},
+          {t:"迷われているので、店舗で最も人気の高いモデルを勧める", ok:false},
+          {t:"ご予算に合わせ、価格が最上位のモデルを提案する", ok:false},
+        ],
+        value:"確信",
+        exp:"ニーズをしっかり伺い、お客様に合ったものを提案します。プロのアドバイザーとして提案する役割があり、お任せの受け身も、人気・価格だけを根拠にした提案も、後悔なき選択の支えにはなりません。"
+      },
+      {
+        scene:"不安を示す場面",
+        stem:"品質や真贋に不安を口にされたお客様。最適な一手はどれでしょうか。",
+        options:[
+          {t:"正規品保証と確かな品質を、明確にお伝えする", ok:true},
+          {t:"ご安心くださいと笑顔で伝え、商品の魅力に話題を移す", ok:false},
+          {t:"世界最高峰のブランドですのでご心配は不要ですと伝える", ok:false},
+          {t:"多くのお客様にご好評ですと、人気を根拠にお伝えする", ok:false},
+        ],
+        value:"安心",
+        exp:"ブランドの正規品保証と品質を明確に伝えることが安心につながります。笑顔での受け流し、ブランドの威光や人気を根拠にした説明では、不安そのものに答えたことになりません。"
+      },
+      {
+        scene:"好みを伺った後",
+        stem:"お客様の好みを伺いました。次の一手として最適なのはどれでしょうか。",
+        options:[
+          {t:"好みに合わせ、新たな魅力のある一本もあわせて提案する", ok:true},
+          {t:"迷わせないよう、ご希望に最も近い一本だけをお見せする", ok:false},
+          {t:"売れ筋の人気モデルを中心にご提案する", ok:false},
+          {t:"ご予算の条件だけで候補を絞ってお見せする", ok:false},
+        ],
+        value:"発見",
+        exp:"お客様の好みに合わせた提案をし、新たな魅力との出会いを生み出します。希望に近い一本だけに絞る、売れ筋を一方的に勧める、予算だけで機械的に絞る対応では、発見の余地が生まれません。"
+      }
+    ]
+  },
+
+  /* ---------- 2. 敬語（敬語ドリル） ---------- */
+  {
+    id:"keigo", num:"V", title:"敬語", subtitle:"敬語ドリル", type:"choice",
+    questions:[
+      {
+        scene:"尊敬語",
+        stem:"お客様が来店されることを言うとき。基本形 <span class='phrase'>来る</span> の尊敬語はどれでしょうか。",
+        options:[
+          {t:"お越しになる", ok:true},
+          {t:"参る", ok:false},
+          {t:"伺う", ok:false},
+          {t:"失礼する", ok:false},
+        ],
+        exp:"来る の尊敬語は お見えになる／いらっしゃる／お越しになる。参る・伺う は謙譲語、失礼する は 帰る の謙譲語です。"
+      },
+      {
+        scene:"謙譲語",
+        stem:"自分が商品を見ることをへりくだって言うとき。<span class='phrase'>見る</span> の謙譲語はどれでしょうか。",
+        options:[
+          {t:"拝見する", ok:true},
+          {t:"ご覧になる", ok:false},
+          {t:"お見えになる", ok:false},
+          {t:"なさる", ok:false},
+        ],
+        exp:"見る の謙譲語は 拝見する。ご覧になる は 見る の尊敬語、お見えになる は 来る の尊敬語、なさる は する の尊敬語です。"
+      },
+      {
+        scene:"尊敬語",
+        stem:"お客様がご存じかどうかを言うとき。基本形 <span class='phrase'>知る</span> の尊敬語はどれでしょうか。",
+        options:[
+          {t:"ご存じ", ok:true},
+          {t:"存じ上げる", ok:false},
+          {t:"存じる", ok:false},
+          {t:"承る", ok:false},
+        ],
+        exp:"知る の尊敬語は ご存じ。存じる／存じ上げる は 知る の謙譲語、承る は 聞く の謙譲語です。"
+      },
+      {
+        scene:"謙譲語",
+        stem:"自分がお客様のもとへ行くとき。<span class='phrase'>行く</span> の謙譲語はどれでしょうか。",
+        options:[
+          {t:"伺う／参る", ok:true},
+          {t:"いらっしゃる", ok:false},
+          {t:"おいでになる", ok:false},
+          {t:"お見えになる", ok:false},
+        ],
+        exp:"行く の謙譲語は 伺う／参る。いらっしゃる・おいでになる は 行く の尊敬語、お見えになる は 来る の尊敬語です。"
+      },
+      {
+        scene:"尊敬語",
+        stem:"お客様が召し上がる場面。基本形 <span class='phrase'>食べる</span> の尊敬語はどれでしょうか。",
+        options:[
+          {t:"召し上がる", ok:true},
+          {t:"いただく", ok:false},
+          {t:"拝見する", ok:false},
+          {t:"いたす", ok:false},
+        ],
+        exp:"食べる の尊敬語は 召し上がる。いただく は 食べる の謙譲語、拝見する は 見る の謙譲語、いたす は する の謙譲語です。"
+      },
+      {
+        scene:"丁寧な言い換え",
+        stem:"<span class='phrase'>ちょっと待ってください</span> を丁寧に。ちょっと は何に言い換えるでしょうか。",
+        options:[
+          {t:"少々", ok:true},
+          {t:"大変", ok:false},
+          {t:"誠に", ok:false},
+          {t:"おそらく", ok:false},
+        ],
+        exp:"ちょっと・少し は 少々。大変 は とても・すごく、誠に は 本当に、おそらく は たぶん の言い換えです。"
+      },
+      {
+        scene:"時制の言い換え",
+        stem:"<span class='phrase'>あした</span> を接客にふさわしい言い方にすると？",
+        options:[
+          {t:"あす（明日）", ok:true},
+          {t:"さきほど", ok:false},
+          {t:"のちほど", ok:false},
+          {t:"みょうごにち", ok:false},
+        ],
+        exp:"あした は あす（明日）。さきほど は さっき、のちほど は あとで、みょうごにち は あさって の言い換えです。"
+      },
+      {
+        scene:"NG表現 → 推奨表現",
+        stem:"<span class='phrase'>高いですが…</span> に代わる、推奨される言い回しはどれでしょうか。",
+        options:[
+          {t:"希少性の高いモデルでございます", ok:true},
+          {t:"多くのお客様にご覧いただいております", ok:false},
+          {t:"現在、ご用意が難しい状況でございます", ok:false},
+          {t:"お客様の雰囲気にとてもお似合いでございます", ok:false},
+        ],
+        exp:"高いですが… は 希少性の高いモデルでございます と価値で伝えます。他はいずれも推奨表現ですが、こちら人気です／在庫はありません／似合います！ への言い換えで、対象が異なります。"
+      }
+    ]
+  },
+
+  /* ---------- 3. お辞儀（角度当て） ---------- */
+  {
+    id:"ojigi", num:"III", title:"お辞儀", subtitle:"角度当て", type:"angle",
+    questions:[
+      { stem:"お出迎えの <span class='phrase'>いらっしゃいませ</span>。ふさわしいお辞儀の角度は？",
+        answer:15, exp:"いらっしゃいませ は 15度・会釈。三分咲きの笑顔でお迎えします。" },
+      { stem:"感謝を伝える <span class='phrase'>ありがとうございます</span>。ふさわしい角度は？",
+        answer:30, exp:"ありがとうございます は 30度・敬礼。五分咲きの笑顔を添えます。" },
+      { stem:"お見送りの <span class='phrase'>ありがとうございました。またお待ちしております</span>。ふさわしい角度は？",
+        answer:45, exp:"お見送りは 45度・最敬礼。満開の笑顔で、丁寧にお見送りします。" },
+      { stem:"承りの <span class='phrase'>かしこまりました</span>。ふさわしい角度は？",
+        answer:15, exp:"かしこまりました は 15度・会釈。テキパキとした動作で応じます。" },
+      { stem:"<span class='phrase'>大変、お待たせいたしました</span>。ふさわしい角度は？",
+        answer:30, exp:"お待たせいたしました は 30度・敬礼。キビキビとした動作を添えます。" },
+      { stem:"お願いをする <span class='phrase'>少々お待ちくださいませ</span>。ふさわしい角度は？",
+        answer:15, exp:"少々お待ちくださいませ は 15度・会釈。時間を頂くお願いの気持ちを込めます。" },
+      { stem:"再来店を願う <span class='phrase'>またどうぞお越しくださいませ</span>。ふさわしい角度は？",
+        answer:45, exp:"またどうぞお越しくださいませ は 45度・最敬礼。満開の笑顔でお伝えします。" },
+      { stem:"深くお詫びする <span class='phrase'>申し訳ございません</span>。ふさわしい角度は？",
+        answer:45, exp:"申し訳ございません は 30〜45度。深いお詫びの場面では最敬礼（45度）で、落ち着いた動作で行います。" }
+    ]
+  },
+
+  /* ---------- 4. 身だしなみ（NG探し） ---------- */
+  {
+    id:"grooming", num:"VI", title:"身だしなみ", subtitle:"NG探し", type:"tap",
+    scenes:[
+      { who:"男性スタッフ", fig:"m",
+        points:[
+          {label:"ジャケットの前ボタンを開けている", ng:true, top:"37%", left:"50%"},
+          {label:"胸ポケットにスマートフォンを入れている", ng:true, top:"33%", left:"70%"},
+          {label:"ネクタイはネイビーの無地", ng:false, top:"46%", left:"50%"},
+          {label:"よく磨かれた黒の革靴", ng:false, top:"93%", left:"50%"},
+        ],
+        exp:"前ボタンが開くとシルエットが崩れ、だらしない印象に。ポケットに物を入れすぎるのもNGです。ネイビー無地・磨かれた革靴は適切です。" },
+      { who:"男性スタッフ", fig:"m",
+        points:[
+          {label:"光沢が強く目立つ柄のネクタイ", ng:true, top:"40%", left:"50%"},
+          {label:"足元は白のスニーカー", ng:true, top:"93%", left:"50%"},
+          {label:"ネームバッジを所定の位置に着けている", ng:false, top:"36%", left:"30%"},
+          {label:"シンプルで上品な腕時計", ng:false, top:"58%", left:"72%"},
+        ],
+        exp:"スーツやネクタイが目立ちすぎると、主役の商品より注目が逸れます。スニーカーは禁止。ネームバッジの位置・上品な時計は適切です。" },
+      { who:"女性スタッフ", fig:"f",
+        points:[
+          {label:"前髪が目にかかり、まとめていない", ng:true, top:"9%", left:"50%"},
+          {label:"大ぶりのネックレス", ng:true, top:"27%", left:"50%"},
+          {label:"膝が隠れる丈のスカート", ng:false, top:"64%", left:"50%"},
+          {label:"3〜5cm のヒール", ng:false, top:"93%", left:"50%"},
+        ],
+        exp:"派手な装飾は商品より目立ち、お客様の集中を妨げます。お辞儀で顔に髪がかからないようまとめます。膝が隠れる丈・3〜5cmヒールは適切な範囲です。" },
+      { who:"女性スタッフ", fig:"f",
+        points:[
+          {label:"丈が短すぎるスカート", ng:true, top:"60%", left:"50%"},
+          {label:"高すぎるヒール", ng:true, top:"93%", left:"50%"},
+          {label:"ナチュラルカラーのジェルネイル", ng:false, top:"50%", left:"72%"},
+          {label:"肩にかかる髪をハーフアップにまとめている", ng:false, top:"12%", left:"50%"},
+        ],
+        exp:"ふさわしい品位とは控えめさの中の上質さ。丈の短いスカート・高すぎるヒールはNGです。ナチュラルカラーのジェルネイル、ハーフアップは認められています。" },
+      { who:"共通", fig:"m",
+        points:[
+          {label:"ジャケットの代わりにカーディガン", ng:true, top:"36%", left:"50%"},
+          {label:"長すぎる爪", ng:true, top:"52%", left:"72%"},
+          {label:"かかとのすり減りのない靴", ng:false, top:"93%", left:"50%"},
+          {label:"ネームバッジを正しく装着", ng:false, top:"36%", left:"30%"},
+        ],
+        exp:"ジャケットの代わりのカーディガンはNG。爪は長すぎないよう手入れをします。手入れされた靴・正しいバッジ装着は適切です。" }
+    ]
+  },
+
+  /* ---------- 5. 見送り（接客ロールプレイ） ---------- */
+  {
+    id:"sendoff", num:"III", title:"見送り", subtitle:"接客ロールプレイ", type:"choice",
+    questions:[
+      {
+        scene:"お見送りの基本",
+        stem:"お会計を終え、お客様をお見送りします。最適な一手はどれでしょうか。",
+        options:[
+          {t:"満開の笑顔で最敬礼し、<span class='phrase'>ありがとうございました。またお待ちしております</span> と伝える", ok:true},
+          {t:"感謝を込めて、30度の敬礼で丁寧にお見送りする", ok:false},
+          {t:"三分咲きの笑顔で会釈し、ありがとうございましたと伝える", ok:false},
+          {t:"深くお辞儀したあと、すぐ次の業務に戻る", ok:false},
+        ],
+        value:"ホスピタリティ",
+        exp:"お見送りは 45度・最敬礼、満開の笑顔で行います。30度や会釈では角度が浅く、お辞儀のあとすぐ業務に戻るのも余韻を欠きます。"
+      },
+      {
+        scene:"余韻を残す",
+        stem:"ご購入を決めてくださったお客様へ。上質な余韻を残す一言はどれでしょうか。",
+        options:[
+          {t:"<span class='phrase'>永くご愛用いただけますと幸いです</span> と感謝を添える", ok:true},
+          {t:"素晴らしいお買い物をされましたね、と選択を称える", ok:false},
+          {t:"次の一本もぜひ、と新しいモデルをご予告する", ok:false},
+          {t:"お手入れの注意点を、この場で詳しくご説明する", ok:false},
+        ],
+        value:"上質",
+        exp:"永くご愛用いただけますと幸いです と伝え、洗練された余韻を残します。大げさな称賛や次の売り込み、長い説明は、押しつけ・売り込み感につながり余韻を損ないます。"
+      },
+      {
+        scene:"選んでよかったと感じていただく",
+        stem:"高額なお買い物をされたお客様に、選んでよかったと感じていただくには？",
+        options:[
+          {t:"<span class='phrase'>この度は誠にありがとうございます</span> と感謝を伝え、選択を肯定する", ok:true},
+          {t:"入手困難な希少モデルですと、希少性を強調する", ok:false},
+          {t:"他のお客様も大変満足されていますと評判を伝える", ok:false},
+          {t:"本当に良いお買い物でしたよ、と主観で強く同意する", ok:false},
+        ],
+        value:"確信",
+        exp:"感謝とともにお客様ご自身の選択を肯定し、後悔なき選択を支えます。希少性の押し出し、他者の評判、押しの強い同意は、かえって売り込み感や不安を生みます。"
+      },
+      {
+        scene:"退店前の間",
+        stem:"お見送り直前、お客様が忘れ物がないか確認しています。最適な一手はどれでしょうか。",
+        options:[
+          {t:"急かさず、にこやかに見守りお客様のペースを尊重する", ok:true},
+          {t:"お忘れ物はございませんかと、先回りしてお声がけする", ok:false},
+          {t:"お荷物をお持ちしましょうかと、すぐ手を差し伸べる", ok:false},
+          {t:"出口までご案内しながら、スムーズに退店を促す", ok:false},
+        ],
+        value:"安心",
+        exp:"お客様のペースを尊重し、にこやかに見守ることで安心感につながります。良かれと思う先回りや誘導も、確認中のお客様を急かす印象を与えかねません。"
+      },
+      {
+        scene:"最後の疑問",
+        stem:"お見送り間際、お客様が使い方に不安を口にされました。最適な一手はどれでしょうか。",
+        options:[
+          {t:"要点を分かりやすくもう一度お伝えし、疑問を残さない", ok:true},
+          {t:"取扱説明書に沿って、隅々まで丁寧にご説明する", ok:false},
+          {t:"ご不明点はお電話でも承りますと、連絡先をご案内する", ok:false},
+          {t:"お使いいただくうちに自然と慣れますと、安心いただく", ok:false},
+        ],
+        value:"納得",
+        exp:"最後は要点を分かりやすく伝え、その場で疑問を残さないことが納得につながります。長すぎる説明、後日への先送り、慣れますといった受け流しは、疑問を残します。"
+      },
+      {
+        scene:"ご購入に至らない場合",
+        stem:"ご購入に至らず退店されるお客様へ。最適な一手はどれでしょうか。",
+        options:[
+          {t:"変わらぬ笑顔で <span class='phrase'>またのご来店を心よりお待ちしております</span> とお見送りする", ok:true},
+          {t:"ご検討中の点があれば、最後にもう一押しご提案する", ok:false},
+          {t:"次回は必ずお気に入りが見つかりますと前向きに伝える", ok:false},
+          {t:"無理のない範囲でとお伝えし、控えめにお見送りする", ok:false},
+        ],
+        value:"ホスピタリティ",
+        exp:"購入の有無にかかわらず、変わらぬ笑顔でお見送りします。最後の一押しは売り込み感を、根拠のない断定や過度に控えめな対応は、購入がないと態度を変えた印象を与えます。再来店につなげる関係づくりが顧客づくりの基本です。"
+      }
+    ]
+  }
+];
+
+/* ================= 今後の章（Coming Soon） =================
+   タイトルはすべて勉強会資料に実在するトピック。
+   実装する際は、この配列から CHAPTERS 側へ questions 付きで移すだけで有効化できる。 */
+const CHAPTER_GOAL=50;   // 目標章数（ロードマップ表示用）
+const COMING=[
+  { title:"所作・立ち居振る舞い", subtitle:"立ち方・歩き方・指差し案内" },
+  { title:"表情・笑顔トレーニング", subtitle:"3種の表情の使い分け" },
+  { title:"接客英語フレーズ", subtitle:"日英対訳の基本フレーズ" },
+  { title:"クリンリネス", subtitle:"店舗・商品・カウンターの点検" },
+  { title:"店舗コンセプトと6つの価値", subtitle:"提供価値の理解" }
+];
+
+/* ================= progress store (localStorage) ================= */
+const KEY="lgr_zyoushitsu_progress_v2";
+/* ポイントは各章の「1回目の挑戦」のみを記録する。first=1回目の正解数, firstPerfect=1回目が一発全問正解か */
+const DEFAULT={first:{},firstPerfect:{},masterAwarded:false};
+function loadProg(){ try{ return Object.assign({},DEFAULT,JSON.parse(localStorage.getItem(KEY))||{}); }catch(e){ return Object.assign({},DEFAULT); } }
+function saveProg(){ try{ localStorage.setItem(KEY,JSON.stringify(progress)); }catch(e){} }
+let progress=loadProg();
+
+const PTS_PER_CORRECT=10, PERFECT_BONUS=50, MASTER_BONUS=200;
+function attempted(id){ return progress.first[id]!==undefined; }
+function computeTotal(p){
+  let t=0;
+  CHAPTERS.forEach(c=>{ t+=(p.first[c.id]||0)*PTS_PER_CORRECT; if(p.firstPerfect[c.id]) t+=PERFECT_BONUS; });
+  if(p.masterAwarded) t+=MASTER_BONUS;
+  return t;
+}
+
+/* ================= state ================= */
+let currentChapterId=null, curCh=null, idx=0, score=0, total=0, answered=false, runPerfect=true;
+let curDisplay=[];   // shuffled options for the current choice question
+let tapSel=new Set();
+
+function itemsOf(ch){ return ch.type==="tap" ? ch.scenes : ch.questions; }
+function shuffle(a){ const r=a.slice(); for(let i=r.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [r[i],r[j]]=[r[j],r[i]]; } return r; }
+
+/* ================= home ================= */
+function renderScoreboard(){
+  document.getElementById("sbPoints").textContent=computeTotal(progress);
+  const done=CHAPTERS.filter(c=>progress.firstPerfect[c.id]).length;
+  let stars="";
+  CHAPTERS.forEach(c=>{ stars += progress.firstPerfect[c.id] ? "★" : "<span class='off'>★</span>"; });
+  document.getElementById("sbStars").innerHTML=stars;
+  document.getElementById("sbProgLbl").textContent = `パーフェクト ${done} / ${CHAPTERS.length} 章`;
+  document.getElementById("masterBanner").classList.toggle("show", !!progress.masterAwarded);
+}
+function buildMenu(){
+  const m=document.getElementById("menu"); m.innerHTML="";
+  CHAPTERS.forEach((ch,i)=>{
+    const n=itemsOf(ch).length;
+    const perfect=!!progress.firstPerfect[ch.id];
+    const first=progress.first[ch.id];
+    const div=document.createElement("button");
+    div.className="card"+(perfect?" perfect":"");
+    div.onclick=()=>startChapter(ch.id);
+    div.innerHTML=`<span class="star">★</span>
+      <span class="num">第 ${i+1} 章</span>
+      <h3>${ch.title}</h3>
+      <p>${ch.subtitle}　全 ${n} 問</p>
+      <span class="best">${ perfect ? "1回目パーフェクト" : (first!=null ? "記録 "+first+" / "+n+"（1回目）" : "未挑戦") }</span>`;
+    m.appendChild(div);
+  });
+}
+function renderComing(){
+  const c=document.getElementById("comingMenu"); c.innerHTML="";
+  const startNo=CHAPTERS.length+1;
+  COMING.forEach((cs,i)=>{
+    const b=document.createElement("button");
+    b.className="card soon";
+    b.onclick=()=>toast("近日公開予定です");
+    b.innerHTML=`<span class="ribbon">COMING SOON</span>
+      <span class="num">第 ${startNo+i} 章</span>
+      <h3>${cs.title}</h3>
+      <p>${cs.subtitle}</p>
+      <span class="best">準備中</span>`;
+    c.appendChild(b);
+  });
+  const nextNo=startNo+COMING.length;
+  if(nextNo<=CHAPTER_GOAL){
+    const more=document.createElement("button");
+    more.className="card soon more";
+    more.onclick=()=>toast("続々公開予定です");
+    more.innerHTML=`<span class="num">第 ${nextNo} 〜 ${CHAPTER_GOAL} 章</span>
+      <h3>続々公開予定</h3>
+      <p>接客の型を、さらに深く</p>`;
+    c.appendChild(more);
+  }
+  document.getElementById("roadmap").innerHTML=
+    `第 ${CHAPTER_GOAL} 章まで順次追加予定　現在 <b>${CHAPTERS.length}</b> 章 公開中`;
+}
+let toastTimer=null;
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.classList.add("show");
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove("show"),1800);
+}
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function goHome(){ renderScoreboard(); buildMenu(); renderComing(); show("home"); }
+
+/* ================= chapter flow ================= */
+function startChapter(id){
+  currentChapterId=id; curCh=CHAPTERS.find(c=>c.id===id);
+  idx=0; score=0; total=itemsOf(curCh).length; answered=false; runPerfect=true;
+  document.getElementById("qChapTitle").firstChild.textContent=`第 ${CHAPTERS.indexOf(curCh)+1} 章　${curCh.title}`;
+  document.getElementById("qChapSub").textContent=curCh.subtitle;
+  show("quiz"); renderItem();
+}
+function updateProgress(){
+  document.getElementById("qBar").style.width=(idx/total*100)+"%";
+  document.getElementById("qCount").textContent=`${idx+1} / ${total}`;
+  const run=document.getElementById("qRun");
+  if(attempted(currentChapterId)){
+    run.innerHTML = "記録済みの章：ポイントは<b>1回目の挑戦のみ</b>反映されます（今回は加算なし）";
+  }else{
+    run.innerHTML = runPerfect ? "1回目の挑戦：<b>全問正解を継続中</b>（クリアで +50pt ボーナス）" : "1回目の挑戦：全問正解ボーナスは持ち越し（次の挑戦へ）";
+  }
+}
+function renderItem(){
+  answered=false; updateProgress();
+  if(curCh.type==="tap") renderTap();
+  else renderChoice();
+}
+
+/* ---------- choice & angle ---------- */
+function renderChoice(){
+  const q=curCh.questions[idx];
+  let html=`<div class="q">`;
+  if(q.scene) html+=`<p class="scene">${q.scene}</p>`;
+  html+=`<p class="stem">${q.stem}</p>`;
+  if(curCh.type==="angle"){
+    curDisplay=[];
+    html+=`<div class="angles">
+      <button class="angle" data-a="15" onclick="answerAngle(this,15)"><b>15°</b><span>会釈</span></button>
+      <button class="angle" data-a="30" onclick="answerAngle(this,30)"><b>30°</b><span>敬礼</span></button>
+      <button class="angle" data-a="45" onclick="answerAngle(this,45)"><b>45°</b><span>最敬礼</span></button>
+    </div>`;
+  }else{
+    curDisplay=shuffle(q.options);
+    html+=`<div class="opts">`;
+    curDisplay.forEach((o,i)=>{ html+=`<button class="opt" data-i="${i}" onclick="answerChoice(this,${i})">${o.t}</button>`; });
+    html+=`</div>`;
+  }
+  html+=`<div class="fb" id="fb"></div><button class="next" id="nextBtn" onclick="nextItem()">次へ →</button></div>`;
+  document.getElementById("qBody").innerHTML=html;
+}
+function answerChoice(el,i){
+  if(answered) return; answered=true;
+  const q=curCh.questions[idx];
+  const correct=curDisplay[i].ok;
+  document.querySelectorAll(".opt").forEach((b,bi)=>{
+    b.disabled=true;
+    if(curDisplay[bi].ok){ b.classList.add("correct"); b.innerHTML+=`<span class="tag">正解</span>`; }
+    else if(bi===i){ b.classList.add("wrong"); b.innerHTML+=`<span class="tag">選択</span>`; }
+  });
+  finishFeedback(correct,q.exp,q.value);
+}
+function answerAngle(el,a){
+  if(answered) return; answered=true;
+  const q=curCh.questions[idx];
+  const correct=(a===q.answer);
+  document.querySelectorAll(".angle").forEach(b=>{
+    b.disabled=true; const v=+b.dataset.a;
+    if(v===q.answer) b.classList.add("correct");
+    else if(v===a) b.classList.add("wrong");
+  });
+  finishFeedback(correct,q.exp,null);
+}
+
+/* ---------- tap / NG探し ---------- */
+function renderTap(){
+  const sc=curCh.scenes[idx];
+  let hots="", chips="";
+  const order=shuffle(sc.points.map((p,i)=>({p,i})));   // shuffle legend order only
+  sc.points.forEach((p,i)=>{
+    hots+=`<button class="hot" data-i="${i}" style="top:${p.top};left:${p.left}" onclick="toggleTap(${i})" aria-label="${p.label}"></button>`;
+  });
+  order.forEach(({p,i})=>{
+    chips+=`<button class="chip" data-i="${i}" onclick="toggleTap(${i})"><span class="dot"></span>${p.label}</button>`;
+  });
+  document.getElementById("qBody").innerHTML=`<div class="q">
+    <p class="scene">${sc.who}</p>
+    <p class="stem">NG（改善が必要）な箇所を<b>すべて</b>選び、判定するを押してください。適切な箇所を選ぶと減点になります。</p>
+    <div class="tapwrap">
+      <div class="figure">${figureSVG(sc.fig)}${hots}</div>
+      <div class="legend"><div class="lg-title">観察ポイント</div>${chips}</div>
+    </div>
+    <p class="tap-hint">丸印またはポイント名をタップで選択／解除できます</p>
+    <div class="fb" id="fb"></div>
+    <button class="next" id="nextBtn" onclick="checkTap()">判定する</button>
+  </div>`;
+  tapSel=new Set();
+}
+function toggleTap(i){
+  if(answered) return;
+  if(tapSel.has(i)) tapSel.delete(i); else tapSel.add(i);
+  document.querySelectorAll(`.hot[data-i="${i}"],.chip[data-i="${i}"]`).forEach(e=>e.classList.toggle("sel"));
+}
+function checkTap(){
+  if(answered) return; answered=true;
+  const sc=curCh.scenes[idx];
+  let correct=true;
+  sc.points.forEach((p,i)=>{
+    const chosen=tapSel.has(i);
+    if(p.ng && !chosen) correct=false;
+    if(!p.ng && chosen) correct=false;
+    const hot=document.querySelector(`.hot[data-i="${i}"]`);
+    const chip=document.querySelector(`.chip[data-i="${i}"]`);
+    hot.classList.remove("sel"); chip.classList.remove("sel");
+    if(p.ng && chosen){ hot.classList.add("reveal-ng"); chip.classList.add("r-ng"); }
+    else if(p.ng && !chosen){ hot.classList.add("reveal-miss"); chip.classList.add("r-ng"); }
+    else if(!p.ng && chosen){ hot.classList.add("reveal-bad"); chip.classList.add("r-bad"); }
+  });
+  const nb=document.getElementById("nextBtn");
+  nb.textContent="次へ →"; nb.setAttribute("onclick","nextItem()");
+  finishFeedback(correct, sc.exp+"（緑がNG箇所、赤は選び誤りです）", null);
+}
+
+/* ---------- shared ---------- */
+function finishFeedback(correct,exp,value){
+  if(correct) score++; else runPerfect=false;
+  const fb=document.getElementById("fb");
+  fb.className="fb show "+(correct?"ok":"ng");
+  const v = value ? `<span class="value">効く価値：${value}</span>` : "";
+  fb.innerHTML=`<div class="head">${correct?"正解":"惜しい"}</div>${exp}<br>${v}`;
+  document.getElementById("nextBtn").classList.add("show");
+}
+function nextItem(){ idx++; if(idx>=total){ showResult(); return; } renderItem(); }
+
+/* ================= result & points ================= */
+function badgeTier(r){
+  if(r>=1)   return {tier:"名匠", msg:"全問正解です。型が完全に身についています。"};
+  if(r>=0.8) return {tier:"上級", msg:"高い習得度です。細部までよく理解できています。"};
+  if(r>=0.6) return {tier:"習得", msg:"基本は習得できています。解説を見直してさらに磨きましょう。"};
+  return              {tier:"精進", msg:"もう一度挑戦し、型を確かなものにしていきましょう。"};
+}
+function showResult(){
+  const b=badgeTier(score/total);
+  const firstTime = !attempted(currentChapterId);   // この章の1回目か
+  const prevTotal=computeTotal(progress);
+  let masterJustNow=false;
+
+  // ポイントは1回目の挑戦のみ記録・加算する。2回目以降は一切加算しない。
+  if(firstTime){
+    progress.first[currentChapterId]=score;
+    if(runPerfect && score===total) progress.firstPerfect[currentChapterId]=true;
+    const allPerfect=CHAPTERS.every(c=>progress.firstPerfect[c.id]);
+    if(allPerfect && !progress.masterAwarded){ progress.masterAwarded=true; masterJustNow=true; }
+    saveProg();
+  }
+  const newTotal=computeTotal(progress);
+  const gained=newTotal-prevTotal;   // 2回目以降は 0
+
+  document.getElementById("rTier").textContent=b.tier;
+  document.getElementById("rScore").innerHTML=`${score} <span>/ ${total} 問正解</span>`;
+  document.getElementById("rChap").textContent=`第 ${CHAPTERS.indexOf(curCh)+1} 章　${curCh.title}　${curCh.subtitle}`;
+  document.getElementById("rMsg").textContent=b.msg;
+
+  // celebrate banner
+  const cel=document.getElementById("rCelebrate");
+  if(masterJustNow){
+    cel.className="celebrate show";
+    cel.innerHTML="◆ 全 5 章パーフェクト達成 ◆<br>マスター認定 ＋ グランドボーナス 200pt";
+  }else if(firstTime && runPerfect && score===total){
+    cel.className="celebrate show";
+    cel.innerHTML="一発パーフェクト達成！　全問正解ボーナス ＋50pt";
+  }else{ cel.className="celebrate"; cel.innerHTML=""; }
+
+  // gain breakdown
+  const rows=[];
+  if(firstTime){
+    rows.push(`<div class="row"><span>正解 ${score} 問 × ${PTS_PER_CORRECT}pt</span><b>${score*PTS_PER_CORRECT}pt</b></div>`);
+    if(progress.firstPerfect[currentChapterId]) rows.push(`<div class="row"><span>一発全問正解ボーナス</span><b>+${PERFECT_BONUS}pt</b></div>`);
+    if(masterJustNow) rows.push(`<div class="row"><span>全章制覇グランドボーナス</span><b>+${MASTER_BONUS}pt</b></div>`);
+    document.getElementById("rGain").innerHTML =
+      rows.join("") +
+      `<div class="total"><span>今回の獲得 +${gained}pt</span><b>${newTotal}pt</b></div>`;
+  }else{
+    const recorded=progress.first[currentChapterId];
+    rows.push(`<div class="row"><span>この章の記録（1回目）</span><b>${recorded} / ${total} 問</b></div>`);
+    rows.push(`<div class="row"><span>ポイントは1回目のみ反映</span><b>今回 +0pt</b></div>`);
+    document.getElementById("rGain").innerHTML =
+      rows.join("") +
+      `<div class="total"><span>累計（変わりません）</span><b>${newTotal}pt</b></div>`;
+  }
+
+  show("result");
+}
+
+/* ---------- silhouettes ---------- */
+function figureSVG(kind){
+  const body="#24406e", edge="#2c477a";
+  if(kind==="f"){
+    return `<svg viewBox="0 0 190 380" preserveAspectRatio="xMidYMid meet">
+      <g fill="${body}" stroke="${edge}" stroke-width="2">
+        <path d="M95 20 q-22 0 -24 24 q-2 22 6 34 q-14 4 -14 16 l0 6 q18 -6 26 -4 q10 3 20 0 q10 -3 24 4 l0 -6 q0 -12 -14 -16 q8 -12 6 -34 q-2 -24 -24 -24z"/>
+        <path d="M60 96 q35 14 70 0 l10 70 q-4 10 -14 8 l-8 -40 l-2 66 l30 130 q-16 8 -30 0 l-16 -120 l-16 120 q-14 8 -30 0 l30 -130 l-2 -66 l-8 40 q-10 2 -14 -8z"/>
+      </g></svg>`;
+  }
+  return `<svg viewBox="0 0 190 380" preserveAspectRatio="xMidYMid meet">
+    <g fill="${body}" stroke="${edge}" stroke-width="2">
+      <circle cx="95" cy="44" r="26"/>
+      <rect x="86" y="66" width="18" height="16" rx="4"/>
+      <path d="M55 90 q40 -16 80 0 l14 74 q-6 10 -16 6 l-10 -46 l0 60 l-30 0 l0 -60 l-10 46 q-10 4 -16 -6z"/>
+      <path d="M65 176 l24 0 l0 176 q-14 6 -26 0z"/>
+      <path d="M101 176 l24 0 l2 176 q-12 6 -26 0z"/>
+    </g></svg>`;
+}
+
+/* init */
+renderScoreboard();
+buildMenu();
+renderComing();
+</script>
+</body>
+</html>
