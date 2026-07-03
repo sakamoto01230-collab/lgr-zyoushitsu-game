@@ -67,6 +67,20 @@ h1{
 }
 .master-banner.show{display:block}
 
+/* player bar */
+.playerbar{margin:0 0 12px}
+.pb-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pb-label{color:var(--muted);font-size:12px;letter-spacing:.1em;white-space:nowrap}
+.pb-select{flex:1;min-width:120px;background:var(--navy2);color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:9px 10px;font-size:14px}
+.pb-btn{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:8px 12px;font-size:13px;cursor:pointer;white-space:nowrap}
+.pb-btn:hover{border-color:var(--gold)}
+.pb-btn.gold{background:linear-gradient(180deg,var(--gold),#b98f3d);color:#241a06;border:none;font-weight:700}
+.pb-btn.danger:hover{border-color:var(--bad);color:var(--bad)}
+.pb-empty{color:var(--gold-soft);font-size:13px;padding:8px 0 2px}
+.pb-add{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.pb-input{flex:1;min-width:140px;background:var(--navy2);color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:15px}
+.pb-input:focus{outline:none;border-color:var(--gold)}
+
 /* value legend */
 .values{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 8px}
 .values .v{background:var(--navy2);border:1px solid var(--line);border-radius:10px;padding:9px 8px;text-align:center}
@@ -232,6 +246,21 @@ h1{
     <h1>上質接客トレーニング</h1>
     <p class="sub">LAOX 時計事業 スタッフ育成ゲーム　接客フローに沿って、遊びながら型を身につける</p>
 
+    <div class="playerbar">
+      <div class="pb-row" id="pbRow" style="display:none">
+        <span class="pb-label">プレイヤー</span>
+        <select id="userSelect" class="pb-select"></select>
+        <button class="pb-btn" id="addUserBtn">＋ 新規</button>
+        <button class="pb-btn danger" id="delUserBtn">削除</button>
+      </div>
+      <div class="pb-empty" id="noUser" style="display:none">はじめに、あなたの名前を登録してください</div>
+      <div class="pb-add" id="addUserForm" style="display:none">
+        <input id="newUserName" class="pb-input" placeholder="名前（例：山田）" maxlength="20" autocomplete="off">
+        <button class="pb-btn gold" id="createUserBtn">登録</button>
+        <button class="pb-btn" id="cancelUserBtn">閉じる</button>
+      </div>
+    </div>
+
     <div class="scoreboard">
       <div class="pts"><b id="sbPoints">0</b><small>TOTAL POINTS</small></div>
       <div class="prog">
@@ -260,7 +289,7 @@ h1{
 
     <p class="foot">
       全 5 章　正解 +10pt ／ 全問正解ボーナス +50pt ／ 全 5 章パーフェクトで +200pt グランドボーナス。<br>
-      進捗はこの端末内にのみ保存されます（外部通信なし）。
+      進捗は名前ごとに、この端末内にのみ保存されます（外部通信なし）。
     </p>
   </div>
   <div id="toast" class="toast"></div>
@@ -640,16 +669,26 @@ const COMING=[
 ];
 
 /* ================= progress store (localStorage) ================= */
-const KEY="lgr_zyoushitsu_progress_v2";
-/* ポイントは各章の「1回目の挑戦」のみを記録する。first=1回目の正解数, firstPerfect=1回目が一発全問正解か */
-const DEFAULT={first:{},firstPerfect:{},masterAwarded:false};
-function loadProg(){ try{ return Object.assign({},DEFAULT,JSON.parse(localStorage.getItem(KEY))||{}); }catch(e){ return Object.assign({},DEFAULT); } }
-function saveProg(){ try{ localStorage.setItem(KEY,JSON.stringify(progress)); }catch(e){} }
-let progress=loadProg();
+/* 名前ごとに記録を保持する。store.users[名前] = {first, firstPerfect, masterAwarded}
+   first=1回目の正解数, firstPerfect=1回目が一発全問正解か。ポイントは各章の1回目のみ加算。 */
+const KEY="lgr_zyoushitsu_store_v3";
+function newUserData(){ return {first:{},firstPerfect:{},masterAwarded:false}; }
+function loadStore(){ try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.users) return s; }catch(e){} return {users:{},current:null}; }
+function saveStore(){ try{ localStorage.setItem(KEY,JSON.stringify(store)); }catch(e){} }
+let store=loadStore();
+if(store.current && !store.users[store.current]) store.current=null;
+let progress = store.current ? store.users[store.current] : null;
+
+function setCurrentUser(name){
+  if(!store.users[name]) store.users[name]=newUserData();
+  store.current=name; progress=store.users[name]; saveStore();
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 const PTS_PER_CORRECT=10, PERFECT_BONUS=50, MASTER_BONUS=200;
-function attempted(id){ return progress.first[id]!==undefined; }
+function attempted(id){ return !!progress && progress.first[id]!==undefined; }
 function computeTotal(p){
+  if(!p) return 0;
   let t=0;
   CHAPTERS.forEach(c=>{ t+=(p.first[c.id]||0)*PTS_PER_CORRECT; if(p.firstPerfect[c.id]) t+=PERFECT_BONUS; });
   if(p.masterAwarded) t+=MASTER_BONUS;
@@ -666,20 +705,51 @@ function shuffle(a){ const r=a.slice(); for(let i=r.length-1;i>0;i--){ const j=M
 
 /* ================= home ================= */
 function renderScoreboard(){
-  document.getElementById("sbPoints").textContent=computeTotal(progress);
-  const done=CHAPTERS.filter(c=>progress.firstPerfect[c.id]).length;
+  document.getElementById("sbPoints").textContent = progress ? computeTotal(progress) : 0;
+  const done = progress ? CHAPTERS.filter(c=>progress.firstPerfect[c.id]).length : 0;
   let stars="";
-  CHAPTERS.forEach(c=>{ stars += progress.firstPerfect[c.id] ? "★" : "<span class='off'>★</span>"; });
+  CHAPTERS.forEach(c=>{ stars += (progress && progress.firstPerfect[c.id]) ? "★" : "<span class='off'>★</span>"; });
   document.getElementById("sbStars").innerHTML=stars;
-  document.getElementById("sbProgLbl").textContent = `パーフェクト ${done} / ${CHAPTERS.length} 章`;
-  document.getElementById("masterBanner").classList.toggle("show", !!progress.masterAwarded);
+  document.getElementById("sbProgLbl").textContent = progress ? `パーフェクト ${done} / ${CHAPTERS.length} 章` : "名前を登録すると記録できます";
+  document.getElementById("masterBanner").classList.toggle("show", !!(progress && progress.masterAwarded));
 }
+function renderPlayerBar(){
+  const names=Object.keys(store.users);
+  const row=document.getElementById("pbRow");
+  const noUser=document.getElementById("noUser");
+  const form=document.getElementById("addUserForm");
+  if(names.length===0){
+    row.style.display="none"; noUser.style.display="block"; form.style.display="flex";
+  }else{
+    row.style.display="flex"; noUser.style.display="none"; form.style.display="none";
+    document.getElementById("userSelect").innerHTML =
+      names.map(n=>`<option value="${escapeHtml(n)}"${n===store.current?" selected":""}>${escapeHtml(n)}</option>`).join("");
+  }
+}
+function createUser(){
+  const inp=document.getElementById("newUserName");
+  const name=(inp.value||"").trim();
+  if(!name){ toast("名前を入力してください"); return; }
+  setCurrentUser(name);
+  inp.value=""; refreshHome();
+  toast(name+" さんでプレイします");
+}
+function deleteCurrentUser(){
+  if(!store.current) return;
+  if(!confirm(store.current+" さんの記録を削除しますか？")) return;
+  delete store.users[store.current];
+  const names=Object.keys(store.users);
+  store.current = names.length ? names[0] : null;
+  progress = store.current ? store.users[store.current] : null;
+  saveStore(); refreshHome();
+}
+function refreshHome(){ renderPlayerBar(); renderScoreboard(); buildMenu(); renderComing(); }
 function buildMenu(){
   const m=document.getElementById("menu"); m.innerHTML="";
   CHAPTERS.forEach((ch,i)=>{
     const n=itemsOf(ch).length;
-    const perfect=!!progress.firstPerfect[ch.id];
-    const first=progress.first[ch.id];
+    const perfect=!!(progress && progress.firstPerfect[ch.id]);
+    const first=progress ? progress.first[ch.id] : undefined;
     const div=document.createElement("button");
     div.className="card"+(perfect?" perfect":"");
     div.onclick=()=>startChapter(ch.id);
@@ -730,10 +800,11 @@ function show(id){
   document.getElementById(id).classList.add("active");
   window.scrollTo({top:0,behavior:"smooth"});
 }
-function goHome(){ renderScoreboard(); buildMenu(); renderComing(); show("home"); }
+function goHome(){ refreshHome(); show("home"); }
 
 /* ================= chapter flow ================= */
 function startChapter(id){
+  if(!store.current){ toast("先に、あなたの名前を登録してください"); return; }
   currentChapterId=id; curCh=CHAPTERS.find(c=>c.id===id);
   idx=0; score=0; total=itemsOf(curCh).length; answered=false; runPerfect=true;
   document.getElementById("qChapTitle").firstChild.textContent=`第 ${CHAPTERS.indexOf(curCh)+1} 章　${curCh.title}`;
@@ -880,7 +951,7 @@ function showResult(){
     if(runPerfect && score===total) progress.firstPerfect[currentChapterId]=true;
     const allPerfect=CHAPTERS.every(c=>progress.firstPerfect[c.id]);
     if(allPerfect && !progress.masterAwarded){ progress.masterAwarded=true; masterJustNow=true; }
-    saveProg();
+    saveStore();
   }
   const newTotal=computeTotal(progress);
   const gained=newTotal-prevTotal;   // 2回目以降は 0
@@ -941,10 +1012,24 @@ function figureSVG(kind){
     </g></svg>`;
 }
 
+/* ---------- player bar events ---------- */
+document.getElementById("addUserBtn").onclick=()=>{
+  const f=document.getElementById("addUserForm");
+  const open = f.style.display!=="flex";
+  f.style.display = open ? "flex" : "none";
+  if(open) document.getElementById("newUserName").focus();
+};
+document.getElementById("cancelUserBtn").onclick=()=>{
+  document.getElementById("addUserForm").style.display="none";
+  document.getElementById("newUserName").value="";
+};
+document.getElementById("createUserBtn").onclick=createUser;
+document.getElementById("newUserName").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); createUser(); } });
+document.getElementById("userSelect").onchange=e=>{ setCurrentUser(e.target.value); refreshHome(); };
+document.getElementById("delUserBtn").onclick=deleteCurrentUser;
+
 /* init */
-renderScoreboard();
-buildMenu();
-renderComing();
+refreshHome();
 </script>
 </body>
 </html>
